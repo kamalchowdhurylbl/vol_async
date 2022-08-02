@@ -24754,4 +24754,3 @@ H5VL_async_optional(void *obj, H5VL_optional_args_t *args, hid_t dxpl_id, void *
 
     return ret_value;
 } /* end H5VL_async_optional() */
-
