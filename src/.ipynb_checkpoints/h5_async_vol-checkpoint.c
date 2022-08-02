@@ -9037,54 +9037,51 @@ is_contig_memspace(hid_t memspace)
 }
 #endif
 
-static herr_t 
-async_dataset_write_merge(async_instance_t *aid, H5VL_async_t *parent_obj, hid_t mem_type_id, hid_t mem_space_id,
-                     hid_t plist_id, const void *buf)
-{   
-    int ndim; 
-    int N1=20;
-    hsize_t     dimsm[1];  
-    hsize_t *buffer;
-    hid_t memspace,dataspace;
-    H5S_sel_type type;
-    herr_t slected_block;
-    hssize_t numblocks;
-    async_dataset_write_args_t *args        = NULL;
-
-     
+static herr_t
+async_dataset_write_merge(async_instance_t *aid, H5VL_async_t *parent_obj, hid_t mem_type_id,
+                          hid_t mem_space_id, hid_t plist_id, const void *buf)
+{
+    int                         ndim;
+    int                         N1 = 20;
+    hsize_t                     dimsm[1];
+    hsize_t *                   buffer;
+    hid_t                       memspace, dataspace;
+    H5S_sel_type                type;
+    herr_t                      slected_block;
+    hssize_t                    numblocks;
+    async_dataset_write_args_t *args = NULL;
 
     assert(aid);
     assert(parent_obj);
     assert(parent_obj->magic == ASYNC_MAGIC);
 
-    type = H5Sget_select_type(mem_type_id);
-    ndim = H5Sget_simple_extent_ndims(mem_space_id);
+    type    = H5Sget_select_type(mem_type_id);
+    ndim    = H5Sget_simple_extent_ndims(mem_space_id);
     *buffer = malloc(ndim * 2 * sizeof(hsize_t));
     //*buffer= (hsize_t *)malloc(sizeof(ndim) * 2);
-    numblocks=H5Sget_select_hyper_nblocks(aid);
-    slected_block=H5Sget_select_hyper_blocklist(aid,0,numblocks,buffer);
-    fprintf(stderr, "ndim=%d\n",ndim);
+    numblocks     = H5Sget_select_hyper_nblocks(aid);
+    slected_block = H5Sget_select_hyper_blocklist(aid, 0, numblocks, buffer);
+    fprintf(stderr, "ndim=%d\n", ndim);
     async_task_t *task_iter;
 
     //#define DL_FOREACH	(head,el)
-      //  for(el=head;el;el=el->next)
+    //  for(el=head;el;el=el->next)
+
+    // DL_FOREACH(aid->qhead,task_iter);
+
+    // args->dset = parent_obj->under_object;
+
+    /*  if(ndim==1){
+
+     }
+     else if(ndim==2){
 
 
-    //DL_FOREACH(aid->qhead,task_iter);
-
-   // args->dset = parent_obj->under_object;
-
-   /*  if(ndim==1){
-        
-    }
-    else if(ndim==2){
+     }
+     else if(ndim==3){
 
 
-    }
-    else if(ndim==3){
-
-
-    } */
+     } */
 
     return 1;
 }
@@ -9105,9 +9102,8 @@ async_dataset_write(async_instance_t *aid, H5VL_async_t *parent_obj, hid_t mem_t
     assert(parent_obj);
     assert(parent_obj->magic == ASYNC_MAGIC);
 
-    
-    async_dataset_write_merge(aid,parent_obj,mem_type_id,mem_space_id,plist_id,buf);
-    
+    async_dataset_write_merge(aid, parent_obj, mem_type_id, mem_space_id, plist_id, buf);
+
     async_instance_g->prev_push_state = async_instance_g->start_abt_push;
 
     if ((args = (async_dataset_write_args_t *)calloc(1, sizeof(async_dataset_write_args_t))) == NULL) {
